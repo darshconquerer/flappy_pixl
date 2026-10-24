@@ -52,6 +52,24 @@ game_play = False
 landing_img = pygame.image.load('./flappu/graphics/Bg_land.png')
 landing_img = pygame.transform.scale(landing_img, (1000, 500))
 
+rect_play = pygame.Rect(0, 0, 200, 60)
+rect_play.center = (500, 250)
+
+WHITE = (255, 255, 255)
+block = 10
+
+block_w = rect_play.width
+block_h = rect_play.height
+px_img = pygame.Surface((block_w, block_h))
+
+for x in range (block_w):
+    for y in range (block_h):
+
+            s = random.randint(90, 190)
+
+            px_img.set_at((x, y), (s, s, s))
+play_button_img = pygame.transform.scale(px_img, rect_play.size)
+
 clock = pygame.time.Clock()
 while True:
     for events in pygame.event.get():
@@ -127,10 +145,14 @@ while True:
 
     elif landing_screen:
         for events in pygame.event.get():
-                if events.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
+            if events.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+        
         screen.blit(landing_img, (0, 0))
+        screen.blit(play_button_img, rect_play)
 
+        pygame.draw.rect(screen, WHITE, rect_play, 1)
+        
     pygame.display.update()
     clock.tick(60)
