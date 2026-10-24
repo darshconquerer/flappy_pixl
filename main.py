@@ -3,27 +3,27 @@ from sys import exit
 import random
 
 pygame.init()
-screen = pygame.display.set_mode((1000, 500))
+screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption('Flappy')
 
-font_ = pygame.font.Font(None, 50)
+font_ = pygame.font.Font(None, 72)
 bg_img = pygame.image.load('graphics/Bg.png').convert()
-bg_img = pygame.transform.scale(bg_img, (1000, 500))
+bg_img = pygame.transform.scale(bg_img, (1280, 720))
 bg_width = bg_img.get_width()
 bg_height = bg_img.get_height()
 bg_x_axis = 0
 bg_y_axis = 0
 
 char_img = pygame.image.load('graphics/tremp.png').convert_alpha()
-char_img = pygame.transform.scale(char_img ,(100, 100))
-char_img_rect = char_img.get_rect(midbottom = (250, 150))
+char_img = pygame.transform.scale(char_img ,(144, 144))
+char_img_rect = char_img.get_rect(midbottom = (320, 216))
 
 pipe_u_img = pygame.image.load('graphics/Up.png').convert_alpha()
 pipe_d_img = pygame.image.load('graphics/Down.png').convert_alpha()
 
-pipe_w = pipe_d_img.get_width()
-pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 500)).convert_alpha()
-pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 500)).convert_alpha()
+pipe_w = pipe_d_img.get_width()*1.28
+pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 720)).convert_alpha()
+pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 720)).convert_alpha()
 
 char_mask = pygame.mask.from_surface(char_img)
 pipe_u_mask = pygame.mask.from_surface(pipe_u_img)
@@ -32,37 +32,37 @@ pipe_d_mask = pygame.mask.from_surface(pipe_d_img)
 pipe_u_rect= []
 pipe_d_rect = []
 
-SPACE = 480
+SPACE = 614
 num_pipes = 3
 scored = [False]*num_pipes
 score = 0
 
 for n in range(num_pipes):
-    starting_point = 1000 + n*SPACE
-    gap_size = random.randint(120, 150)
-    gap_center = random.randint(150, 280)
+    starting_point = 1280 + n*SPACE
+    gap_size = random.randint(173, 216)
+    gap_center = random.randint(216, 403)
 
     half_gap = gap_size//2
 
     pipe_d_rect.append(pipe_d_img.get_rect(midbottom = (starting_point, gap_center - half_gap)))
     pipe_u_rect.append(pipe_u_img.get_rect(midtop = (starting_point, gap_center + half_gap)))
 
-scroll = 6
-gravity = 0.25
+scroll = 8
+gravity = 0.36
 speed = 0
-jump = -5.5
+jump = -7.9
 
 def reset_game():
     global score, speed, bg_x_axis
     score = 0
     speed = 0
     bg_x_axis = 0
-    char_img_rect.midbottom = (250, 150)
+    char_img_rect.midbottom = (320, 216)
 
     for n in range(num_pipes):
-        starting_point = 1000 + n*SPACE
-        gap_size = random.randint(110, 150)
-        gap_center = random.randint(150, 280)
+        starting_point = 1280 + n*SPACE
+        gap_size = random.randint(158, 216)
+        gap_center = random.randint(216, 403)
 
         half_gap = gap_size//2
 
@@ -75,24 +75,24 @@ landing_screen = True
 game_play = False
 game_over = False
 landing_img = pygame.image.load('graphics/Bg_land.png').convert()
-landing_img = pygame.transform.scale(landing_img, (1000, 500))
+landing_img = pygame.transform.scale(landing_img, (1280, 720))
 landing_img_width = landing_img.get_width()
 landing_img_x = 0
 
-rect_play = pygame.Rect(0, 0, 200, 60)
-rect_play1 = pygame.Rect(0, 0, 200, 60)
-rect_play2 = pygame.Rect(0, 0, 200, 60)
-rect_play.center = (500, 250)
-rect_play1.center = (500, 200)
-rect_play2.center = (500, 300)
+rect_play = pygame.Rect(0, 0, 256, 86)
+rect_play1 = pygame.Rect(0, 0, 256, 86)
+rect_play2 = pygame.Rect(0, 0, 256, 86)
+rect_play.center = (640, 360)
+rect_play1.center = (640, 288)
+rect_play2.center = (640, 432)
 
 play_game_text_img = pygame.image.load('graphics/play_text.png').convert_alpha()
-play_game_text_img = pygame.transform.scale(play_game_text_img, (160, 60))
+play_game_text_img = pygame.transform.scale(play_game_text_img, (230, 86))
 rect_play_game_text_img = play_game_text_img.get_rect(center=rect_play.center)
 
 enter_game_img = pygame.image.load('graphics/enter_game.png').convert_alpha()
-enter_game_img = pygame.transform.scale(enter_game_img, (250, 75))
-enter_game_rect = enter_game_img.get_rect(midleft =(380, 390))
+enter_game_img = pygame.transform.scale(enter_game_img, (360, 108))
+enter_game_rect = enter_game_img.get_rect(midleft =(466, 562))
 WHITE = (255, 255, 255)
 
 block = 10
@@ -112,9 +112,9 @@ play_button_img = pygame.transform.scale(px_img, rect_play.size)
 play_again_img = pygame.image.load('graphics/play_again.png').convert_alpha()
 main_menu_img = pygame.image.load('graphics/main_menu.png').convert_alpha()
 
-play_again_img = pygame.transform.scale(play_again_img, (160, 60))
+play_again_img = pygame.transform.scale(play_again_img, (230, 86))
 rect_play_again_img = play_again_img.get_rect(center=rect_play1.center)
-main_menu_img = pygame.transform.scale(main_menu_img, (160, 60))
+main_menu_img = pygame.transform.scale(main_menu_img, (230, 86))
 rect_main_menu_img = main_menu_img.get_rect(center=rect_play2.center)
 
 
@@ -164,8 +164,8 @@ while True:
         speed += gravity
         char_img_rect.y += speed
 
-        if char_img_rect.y > 490 or char_img_rect.y < -50:
-            char_img_rect.y = 150
+        if char_img_rect.y > 706 or char_img_rect.y < -72:
+            char_img_rect.y = 216
             speed = 0
             score = 0
             game_play = False
@@ -185,8 +185,8 @@ while True:
                         scored[i] = True
 
             if pipe_d_rect[i].right < 0:
-                gap_size = random.randint(80 , 150)
-                gap_center = random.randint(110, 410)
+                gap_size = random.randint(115 , 216)
+                gap_center = random.randint(158, 590)
                 half_gap = gap_size//2
 
                 other_pipe = (i-1) % num_pipes
@@ -202,7 +202,7 @@ while True:
             img_d_correct = (pipe_d_rect[i].x - char_img_rect.x, pipe_d_rect[i].y - char_img_rect.y)
 
             if char_mask.overlap(pipe_u_mask, img_u_correct) or char_mask.overlap(pipe_d_mask, img_d_correct):
-                char_img_rect.center = (300, 200)
+                char_img_rect.center = (384, 288)
                 speed = 0
                 score = 0
 
@@ -214,7 +214,7 @@ while True:
             screen.blit(pipe_d_img, pipe_d_rect[i])
 
         score_flap = font_.render(str(score), True, 'white')
-        screen.blit(score_flap, (475, 40))
+        screen.blit(score_flap, (608, 58))
 
     elif landing_screen:
         landing_img_x -= scroll // 3
