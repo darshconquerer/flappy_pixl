@@ -8,8 +8,6 @@ pygame.display.set_caption('Flappy')
 
 font_ = pygame.font.Font(None, 50)
 
-score = 0
-scored = [False, False]
 
 bg_img = pygame.image.load('./flappu/graphics/Bg.png').convert_alpha()
 bg_img = pygame.transform.scale(bg_img, (1000, 500))
@@ -30,24 +28,28 @@ pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 500))
 pipe_u_rect= []
 pipe_d_rect = []
 
-SPACE = 800
+SPACE = 400
+num_pipes = 3
+scored = [False]*num_pipes
+score = 0
 
-for starting_point in [1000, 1000 + SPACE]:
+for n in range(num_pipes):
+    starting_point = 1000 + n*SPACE
     gap_size = random.randint(110, 150)
     gap_center = random.randint(150, 280)
 
     half_gap = gap_size//2
 
-    pipe_d_rect.append(pipe_d_img.get_rect(midbottom = (starting_point, gap_size - half_gap)))
-    pipe_u_rect.append(pipe_u_img.get_rect(midtop = (starting_point, gap_size + half_gap)))
+    pipe_d_rect.append(pipe_d_img.get_rect(midbottom = (starting_point, gap_center - half_gap)))
+    pipe_u_rect.append(pipe_u_img.get_rect(midtop = (starting_point, gap_center + half_gap)))
 
 scroll = 7
 gravity = 0.25
 speed = 0
 jump = -5
 
-landing_screen = True
-game_play = False
+landing_screen = False
+game_play = True
 
 landing_img = pygame.image.load('./flappu/graphics/Bg_land.png')
 landing_img = pygame.transform.scale(landing_img, (1000, 500))
@@ -101,7 +103,7 @@ while True:
 
         char_collision_box = char_img_rect.inflate(-98, -88)
 
-        for i in range(2):
+        for i in range(num_pipes):
             pipe_d_rect[i].x -= scroll
             pipe_u_rect[i].x -= scroll
 
@@ -114,7 +116,7 @@ while True:
                 gap_center = random.randint(120, 400)
                 half_gap = gap_size//2
 
-                other_pipe = (i+1) % 2
+                other_pipe = (i-1) % num_pipes
 
                 new_pipe_x = pipe_d_rect[other_pipe].centerx + SPACE
 
@@ -132,10 +134,6 @@ while True:
                 score = 0
                 game_play = False
 
-                pipe_u_rect[0].x = 1000
-                pipe_d_rect[0].x = 1000
-                pipe_u_rect[1].x = 1000 + SPACE
-                pipe_d_rect[1].x = 1000 + SPACE
 
             screen.blit(pipe_u_img, pipe_u_rect[i])
             screen.blit(pipe_d_img, pipe_d_rect[i])
