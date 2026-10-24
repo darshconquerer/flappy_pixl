@@ -8,7 +8,6 @@ pygame.display.set_caption('Flappy')
 
 font_ = pygame.font.Font(None, 50)
 
-
 bg_img = pygame.image.load('./flappu/graphics/Bg.png').convert_alpha()
 bg_img = pygame.transform.scale(bg_img, (1000, 500))
 bg_width = bg_img.get_width()
@@ -22,8 +21,12 @@ pipe_u_img = pygame.image.load('./flappu/graphics/Up.png').convert_alpha()
 pipe_d_img = pygame.image.load('./flappu/graphics/Down.png').convert_alpha()
 
 pipe_w = pipe_d_img.get_width()
-pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 500))
-pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 500))
+pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 500)).convert_alpha()
+pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 500)).convert_alpha()
+
+char_mask = pygame.mask.from_surface(char_img)
+pipe_u_mask = pygame.mask.from_surface(pipe_u_img)
+pipe_d_mask = pygame.mask.from_surface(pipe_d_img)
 
 pipe_u_rect= []
 pipe_d_rect = []
@@ -48,16 +51,24 @@ gravity = 0.25
 speed = 0
 jump = -5
 
-landing_screen = False
-game_play = True
+landing_screen = True
+game_play = False
 
-landing_img = pygame.image.load('./flappu/graphics/Bg_land.png')
+landing_img = pygame.image.load('./flappu/graphics/Bg_land.png').convert()
 landing_img = pygame.transform.scale(landing_img, (1000, 500))
 
 rect_play = pygame.Rect(0, 0, 200, 60)
 rect_play.center = (500, 250)
 
+play_game_text_img = pygame.image.load('./flappu/graphics/play_text.png').convert_alpha()
+play_game_text_img = pygame.transform.scale(play_game_text_img, (160, 60))
+rect_play_game_text_img = play_game_text_img.get_rect(center=rect_play.center)
+
+enter_game_img = pygame.image.load('./flappu/graphics/enter_game.png') 
+enter_game_img = pygame.transform.scale(enter_game_img, (250, 75))
+enter_game_rect = enter_game_img.get_rect(midleft =(380, 390))
 WHITE = (255, 255, 255)
+
 block = 10
 
 block_w = rect_play.width
@@ -83,6 +94,16 @@ while True:
                 if events.key == pygame.K_SPACE:
                     speed = jump 
 
+        if landing_screen:
+            if(events.type == pygame.MOUSEBUTTONDOWN):
+                if rect_play_game_text_img.collidepoint(events.pos):
+                    landing_screen = False
+                    game_play = True
+            if events.type == pygame.KEYDOWN:
+                 if(events.key == pygame.K_SPACE):
+                    landing_screen = False
+                    game_play = True    
+
     if game_play: 
         bg_x_axis -= scroll
         if bg_x_axis <= -bg_width:
@@ -100,8 +121,6 @@ while True:
         screen.blit(bg_img, (bg_x_axis, 0))
         screen.blit(bg_img, (bg_x_axis+ bg_width, 0))
         screen.blit(char_img, char_img_rect)
-
-        char_collision_box = char_img_rect.inflate(-98, -88)
 
         for i in range(num_pipes):
             pipe_d_rect[i].x -= scroll
@@ -125,10 +144,10 @@ while True:
 
                 scored[i] = False
             
-            pipe_u_colliosion_box = pipe_u_rect[i].inflate(-124, 0)
-            pipe_d_colliosion_box = pipe_d_rect[i].inflate(-124, 0)
+            img_u_correct = (pipe_u_rect[i].x - char_img_rect.x, pipe_u_rect[i].y - char_img_rect.y)
+            img_d_correct = (pipe_d_rect[i].x - char_img_rect.x, pipe_d_rect[i].y - char_img_rect.y)
 
-            if(char_collision_box.colliderect(pipe_u_colliosion_box) or char_collision_box.colliderect(pipe_d_colliosion_box)):
+            if char_mask.overlap(pipe_u_mask, img_u_correct) or char_mask.overlap(pipe_d_mask, img_d_correct):
                 char_img_rect.center = (300, 200)
                 speed = 0
                 score = 0
@@ -149,7 +168,8 @@ while True:
         
         screen.blit(landing_img, (0, 0))
         screen.blit(play_button_img, rect_play)
-
+        screen.blit(play_game_text_img, rect_play_game_text_img)
+        screen.blit(enter_game_img, (enter_game_rect))
         pygame.draw.rect(screen, WHITE, rect_play, 1)
         
     pygame.display.update()
