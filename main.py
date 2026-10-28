@@ -22,8 +22,8 @@ pipe_u_img = pygame.image.load('graphics/Up.png').convert_alpha()
 pipe_d_img = pygame.image.load('graphics/Down.png').convert_alpha()
 
 pipe_w = pipe_d_img.get_width()*1.28
-pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 720)).convert_alpha()
-pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 720)).convert_alpha()
+pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 730)).convert_alpha()
+pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 730)).convert_alpha()
 
 char_mask = pygame.mask.from_surface(char_img)
 pipe_u_mask = pygame.mask.from_surface(pipe_u_img)
@@ -61,7 +61,7 @@ def reset_game():
 
     for n in range(num_pipes):
         starting_point = 1280 + n*SPACE
-        gap_size = random.randint(158, 216)
+        gap_size = random.randint(110, 180)
         gap_center = random.randint(216, 403)
 
         half_gap = gap_size//2
@@ -92,7 +92,7 @@ rect_play_game_text_img = play_game_text_img.get_rect(center=rect_play.center)
 
 enter_game_img = pygame.image.load('graphics/enter_game.png').convert_alpha()
 enter_game_img = pygame.transform.scale(enter_game_img, (360, 108))
-enter_game_rect = enter_game_img.get_rect(midleft =(466, 562))
+enter_game_rect = enter_game_img.get_rect(midleft =(466, 662))
 WHITE = (255, 255, 255)
 
 block = 10
@@ -185,8 +185,8 @@ while True:
                         scored[i] = True
 
             if pipe_d_rect[i].right < 0:
-                gap_size = random.randint(115 , 216)
-                gap_center = random.randint(158, 590)
+                gap_size = random.randint(80 , 150)
+                gap_center = random.randint(200, 550)
                 half_gap = gap_size//2
 
                 other_pipe = (i-1) % num_pipes
