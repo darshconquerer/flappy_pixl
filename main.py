@@ -7,6 +7,8 @@ screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption('Flappy')
 
 font_ = pygame.font.Font(None, 72)
+hint_font = pygame.font.Font(None, 36)
+
 bg_img = pygame.image.load('graphics/Bg.png').convert()
 bg_img = pygame.transform.scale(bg_img, (1280, 720))
 bg_width = bg_img.get_width()
@@ -14,9 +16,26 @@ bg_height = bg_img.get_height()
 bg_x_axis = 0
 bg_y_axis = 0
 
-char_img = pygame.image.load('graphics/tremp.png').convert_alpha()
-char_img = pygame.transform.scale(char_img ,(144, 144))
+char_files = ['graphics/tremp.png', 'graphics/putin.png', 'graphics/xi.png']
+char_imgs = []
+char_masks = []
+
+for f in char_files:
+    img = pygame.image.load(f).convert_alpha()
+    img = pygame.transform.scale(img, (144, 144))
+    char_imgs.append(img)
+    char_masks.append(pygame.mask.from_surface(img))
+
+selected = 0
+char_img = char_imgs[selected]
+char_mask = char_masks[selected]
 char_img_rect = char_img.get_rect(midbottom = (320, 216))
+
+def select_char(index):
+    global selected, char_img, char_mask
+    selected = index % len(char_imgs)
+    char_img = char_imgs[selected]
+    char_mask = char_masks[selected]
 
 pipe_u_img = pygame.image.load('graphics/Up.png').convert_alpha()
 pipe_d_img = pygame.image.load('graphics/Down.png').convert_alpha()
@@ -25,7 +44,6 @@ pipe_w = pipe_d_img.get_width()*1.28
 pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 730)).convert_alpha()
 pipe_d_img = pygame.transform.scale(pipe_d_img, (pipe_w, 730)).convert_alpha()
 
-char_mask = pygame.mask.from_surface(char_img)
 pipe_u_mask = pygame.mask.from_surface(pipe_u_img)
 pipe_d_mask = pygame.mask.from_surface(pipe_d_img)
 
@@ -141,7 +159,11 @@ while True:
                     reset_game()
                     landing_screen = False
                     game_play = True 
-                    game_over = False   
+                    game_over = False  
+                if(events.key) == pygame.K_RIGHT or events.key == pygame.K_d:
+                    select_char(selected + 1)
+                if events.key == pygame.K_LEFT or events.key == pygame.K_a:
+                    select_char(selected - 1)
 
         if(game_over):
             if events.type == pygame.MOUSEBUTTONDOWN:
@@ -185,7 +207,7 @@ while True:
                         scored[i] = True
 
             if pipe_d_rect[i].right < 0:
-                gap_size = random.randint(80 , 150)
+                gap_size = random.randint(75 , 150)
                 gap_center = random.randint(200, 550)
                 half_gap = gap_size//2
 
@@ -227,6 +249,12 @@ while True:
         screen.blit(play_game_text_img, rect_play_game_text_img)
         screen.blit(enter_game_img, (enter_game_rect))
         pygame.draw.rect(screen, WHITE, rect_play, 1)
+
+        preview_rect = char_img.get_rect(center = (640, 190))
+        screen.blit(char_img, preview_rect)
+
+        hint = hint_font.render('Click A or D to change character', True, 'white')
+        screen.blit(hint, hint.get_rect(center = (640, 50)))
 
     elif game_over:
         bg_y_axis -= scroll // 2
