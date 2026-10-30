@@ -8,6 +8,15 @@ pygame.display.set_caption('Flappy')
 
 font_ = pygame.font.Font(None, 72)
 hint_font = pygame.font.Font(None, 36)
+btn_font = pygame.font.Font(None, 40)
+small_font = pygame.font.Font(None, 28)
+
+WHITE = (255, 255, 255)
+GOLD = (255, 215, 0)
+
+def draw_text(text, font, center, color = WHITE):
+    surf = font.render(text, True, color)
+    screen.blit(surf, surf.get_rect(center = center))
 
 bg_img = pygame.image.load('graphics/Bg.png').convert()
 bg_img = pygame.transform.scale(bg_img, (1280, 720))
@@ -65,7 +74,23 @@ for n in range(num_pipes):
     pipe_d_rect.append(pipe_d_img.get_rect(midbottom = (starting_point, gap_center - half_gap)))
     pipe_u_rect.append(pipe_u_img.get_rect(midtop = (starting_point, gap_center + half_gap)))
 
-scroll = 8
+base_scroll = 8
+
+difficulties = [
+    ('Very Easy', 0.5),
+    ('Easy', 0.75),
+    ('Normal', 1.0),
+    ('Good', 1.15),
+    ('Hard', 1.25),
+    ('Insane', 1.35),
+    ('Impossible', 1.5)
+]
+
+difficulty_index = 1
+scroll = int(base_scroll * difficulties[1][1])
+
+diff_label = 'Select Difficulty'
+
 gravity = 0.36
 speed = 0
 jump = -7.9
@@ -91,18 +116,45 @@ def reset_game():
 
 landing_screen = True
 game_play = False
+char_select = False
+diff_select = False
 game_over = False
+
+def show_screen(name):
+    global landing_screen, char_select, diff_select, game_play, game_over
+    landing_screen = (name == 'landing')
+    char_select = (name == 'char_select')
+    diff_select = (name == 'diff_select')
+    game_play = (name == 'play')
+    game_over = (name == 'game_over')
+
 landing_img = pygame.image.load('graphics/Bg_land.png').convert()
 landing_img = pygame.transform.scale(landing_img, (1280, 720))
 landing_img_width = landing_img.get_width()
 landing_img_x = 0
 
 rect_play = pygame.Rect(0, 0, 256, 86)
+rect_diff = pygame.Rect(0, 0, 256, 86)
+rect_play.center = (640, 360)
+rect_diff.center = (640, 500)
+
 rect_play1 = pygame.Rect(0, 0, 256, 86)
 rect_play2 = pygame.Rect(0, 0, 256, 86)
-rect_play.center = (640, 360)
 rect_play1.center = (640, 288)
 rect_play2.center = (640, 432)
+
+rect_back = pygame.Rect(0, 0, 256, 86)
+rect_left = pygame.Rect(0, 0, 90, 90)
+rect_right = pygame.Rect(0, 0, 90, 90)
+rect_back.center = (640, 600)
+rect_left.center = (420, 320)
+rect_right.center = (860, 320)
+
+diff_rects = []
+for i in range(len(difficulties)):
+    r = pygame.Rect(0, 0, 256, 86)
+    r.center = (490 + (i%2)* 300, 180 + (i//2)*95)
+    diff_rects.append(r)
 
 play_game_text_img = pygame.image.load('graphics/play_text.png').convert_alpha()
 play_game_text_img = pygame.transform.scale(play_game_text_img, (230, 86))
@@ -135,6 +187,9 @@ rect_play_again_img = play_again_img.get_rect(center=rect_play1.center)
 main_menu_img = pygame.transform.scale(main_menu_img, (230, 86))
 rect_main_menu_img = main_menu_img.get_rect(center=rect_play2.center)
 
+def draw_button(rect, border = WHITE, width = 1):
+    screen.blit(pygame.transform.scale(play_button_img, rect.size), rect)
+    pygame.draw.rect(screen, border, rect, width)
 
 clock = pygame.time.Clock()
 while True:
@@ -147,25 +202,57 @@ while True:
                 if events.key == pygame.K_SPACE:
                     speed = jump 
 
-        if landing_screen:
+        elif landing_screen:
             if(events.type == pygame.MOUSEBUTTONDOWN):
                 if rect_play_game_text_img.collidepoint(events.pos):
                     reset_game()
                     landing_screen = False
                     game_play = True
                     game_over = False
+                elif rect_diff.collidepoint(events.pos):
+                    show_screen('diff_select')
             if events.type == pygame.KEYDOWN:
                 if(events.key == pygame.K_SPACE):
                     reset_game()
                     landing_screen = False
                     game_play = True 
                     game_over = False  
+                if events.key == pygame.K_RETURN:
+                    reset_game()
+                    landing_screen = False
+                    game_play = True 
+                    game_over = False 
                 if(events.key) == pygame.K_RIGHT or events.key == pygame.K_d:
                     select_char(selected + 1)
                 if events.key == pygame.K_LEFT or events.key == pygame.K_a:
                     select_char(selected - 1)
 
-        if(game_over):
+        elif char_select:
+            if events.type == pygame.MOUSEBUTTONDOWN:
+                if rect_left.collidepoint(events.pos):
+                    select_char(selected -1)
+                if rect_right.collidepoint(events.pos):
+                    select_char(selected +1)
+                if rect_back.collidepoint(events.pos):
+                    show_screen('landing')
+            if events.type == pygame.KEYDOWN:
+                if events.key in (pygame.K_RIGHT, pygame.K_d):
+                    select_char(selected + 1)
+                if events.key in (pygame.K_LEFT, pygame.K_a):
+                    select_char(selected - 1)
+        
+        elif diff_select:
+            if events.type == pygame.MOUSEBUTTONDOWN:
+                for i in range (len(diff_rects)):
+                    if diff_rects[i].collidepoint(events.pos):
+                        difficulty_index = i 
+                        diff_label = difficulties[i][0]
+                        scroll = int(base_scroll * difficulties[i][1])
+                        show_screen('landing')  
+                if rect_back.collidepoint(events.pos):
+                    show_screen('landing')
+
+        elif(game_over):
             if events.type == pygame.MOUSEBUTTONDOWN:
                 if rect_main_menu_img.collidepoint(events.pos):
                     landing_screen = True
@@ -207,7 +294,7 @@ while True:
                         scored[i] = True
 
             if pipe_d_rect[i].right < 0:
-                gap_size = random.randint(75 , 150)
+                gap_size = random.randint(70 , 150)
                 gap_center = random.randint(200, 550)
                 half_gap = gap_size//2
 
@@ -238,23 +325,62 @@ while True:
         score_flap = font_.render(str(score), True, 'white')
         screen.blit(score_flap, (608, 58))
 
-    elif landing_screen:
-        landing_img_x -= scroll // 3
+    elif landing_screen or char_select or diff_select:
+        landing_img_x -= base_scroll // 3
         if landing_img_x <= -landing_img_width:
             landing_img_x = 0
 
         screen.blit(landing_img, (landing_img_x, 0))
         screen.blit(landing_img, (landing_img_x + landing_img_width , 0))
-        screen.blit(play_button_img, rect_play)
-        screen.blit(play_game_text_img, rect_play_game_text_img)
-        screen.blit(enter_game_img, (enter_game_rect))
-        pygame.draw.rect(screen, WHITE, rect_play, 1)
 
-        preview_rect = char_img.get_rect(center = (640, 190))
-        screen.blit(char_img, preview_rect)
+        if landing_screen:
+            screen.blit(play_button_img, rect_play)
+            screen.blit(play_game_text_img, rect_play_game_text_img)
+            pygame.draw.rect(screen, WHITE, rect_play, 1)
+            screen.blit(enter_game_img, (enter_game_rect))
 
-        hint = hint_font.render('Click A or D to change character', True, 'white')
-        screen.blit(hint, hint.get_rect(center = (640, 50)))
+            draw_button(rect_diff)
+            draw_text(diff_label, btn_font, rect_diff.center)
+
+            preview_rect = char_img.get_rect(center = (640, 190))
+            screen.blit(char_img, preview_rect)
+
+            preview_rect = char_img.get_rect(center = (640, 190))
+            screen.blit(char_img, preview_rect)
+
+            hint = hint_font.render('Click A or D to change character', True, 'white')
+            screen.blit(hint, hint.get_rect(center = (640, 50)))
+
+        elif char_select:
+            draw_text('Select Charater', font_, (640, 70))
+
+            big_img = pygame.transform.scale(char_img, (288, 288))
+            screen.blit(big_img, big_img.get_rect(center = (640, 320)))
+
+            draw_button(rect_left)
+            draw_button(rect_right)
+            draw_text('<', font_, rect_left.center)
+            draw_text('>', font_, rect_right.center)
+
+            draw_text(str(selected + 1) + ' / ' + str(len(char_imgs)), hint_font, (640, 500))
+
+            draw_button(rect_back)
+            draw_text('Back', btn_font, rect_back.center)
+
+        elif diff_select:
+            draw_text('Select Difficulty', font_, (640, 70))
+
+            for i in range(len(difficulties)):
+                name, mult = difficulties[i]
+                if i == difficulty_index:
+                    draw_button(diff_rects[i], GOLD, 4) 
+                else:
+                    draw_button(diff_rects[i])
+                draw_text(name, btn_font, (diff_rects[i].centerx, diff_rects[i].centery - 12))
+                draw_text(str(mult) + 'x', small_font, (diff_rects[i].centerx, diff_rects[i].centery + 20))
+
+                draw_button(rect_back)
+                draw_text('Back', btn_font, rect_back.center)
 
     elif game_over:
         bg_y_axis -= scroll // 2
@@ -272,4 +398,3 @@ while True:
 
     pygame.display.update()
     clock.tick(60)
-
