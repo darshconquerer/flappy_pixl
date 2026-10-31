@@ -1,6 +1,30 @@
 import pygame
-from sys import exit
 import random
+import sys
+import os
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+def score_path():
+    return os.path.join(os.path.expanduser("~"), ".flappy_highscore.txt")
+
+def log_crash(exc_type, exc_value, exc_tb):
+    import traceback
+    try:
+        with open(os.path.join(os.path.expanduser("~"), "flappy_crash.log"), "w") as f:
+            traceback.print_exception(exc_type, exc_value, exc_tb, file=f)
+    except OSError:
+        pass
+    if sys.stderr is not None:
+        sys.__excepthook__(exc_type, exc_value, exc_tb)
+ 
+sys.excepthook = log_crash
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -18,7 +42,7 @@ def draw_text(text, font, center, color = WHITE):
     surf = font.render(text, True, color)
     screen.blit(surf, surf.get_rect(center = center))
 
-bg_img = pygame.image.load('graphics/Bg.png').convert()
+bg_img = pygame.image.load(resource_path("graphics/Bg.png")).convert()
 bg_img = pygame.transform.scale(bg_img, (1280, 720))
 bg_width = bg_img.get_width()
 bg_height = bg_img.get_height()
@@ -30,7 +54,7 @@ char_imgs = []
 char_masks = []
 
 for f in char_files:
-    img = pygame.image.load(f).convert_alpha()
+    img = pygame.image.load(resource_path(f)).convert_alpha()
     img = pygame.transform.scale(img, (144, 144))
     char_imgs.append(img)
     char_masks.append(pygame.mask.from_surface(img))
@@ -46,8 +70,8 @@ def select_char(index):
     char_img = char_imgs[selected]
     char_mask = char_masks[selected]
 
-pipe_u_img = pygame.image.load('graphics/Up.png').convert_alpha()
-pipe_d_img = pygame.image.load('graphics/Down.png').convert_alpha()
+pipe_u_img = pygame.image.load(resource_path('graphics/Up.png')).convert_alpha()
+pipe_d_img = pygame.image.load(resource_path('graphics/Down.png')).convert_alpha()
 
 pipe_w = pipe_d_img.get_width()*1.28
 pipe_u_img = pygame.transform.scale(pipe_u_img, (pipe_w, 730)).convert_alpha()
@@ -67,7 +91,7 @@ score = 0
 final_score = 0
 high_score = 0
 try:
-    with open('highcore.txt') as hs_file:
+    with open(score_path()) as hs_file:
         high_score = int(hs_file.read())
 except (FileNotFoundError, ValueError):
     pass
@@ -88,8 +112,10 @@ def save_scores():
     final_score = score
     if score> high_score:
         high_score = score
-        with open('highscore.txt', 'w') as hs_file:
-            hs_file.write(str(high_score))
+        try:
+            with open(score_path(s), 'w') as hs_file:
+                hs_file.write(str(high_score))
+        except OSError: pass
 
 base_scroll = 8
 
@@ -145,7 +171,7 @@ def show_screen(name):
     game_play = (name == 'play')
     game_over = (name == 'game_over')
 
-landing_img = pygame.image.load('graphics/Bg_land.png').convert()
+landing_img = pygame.image.load(resource_path('graphics/Bg_land.png')).convert()
 landing_img = pygame.transform.scale(landing_img, (1280, 720))
 landing_img_width = landing_img.get_width()
 landing_img_x = 0
@@ -173,11 +199,11 @@ for i in range(len(difficulties)):
     r.center = (490 + (i%2)* 300, 180 + (i//2)*95)
     diff_rects.append(r)
 
-play_game_text_img = pygame.image.load('graphics/play_text.png').convert_alpha()
+play_game_text_img = pygame.image.load(resource_path('graphics/play_text.png')).convert_alpha()
 play_game_text_img = pygame.transform.scale(play_game_text_img, (230, 86))
 rect_play_game_text_img = play_game_text_img.get_rect(center=rect_play.center)
 
-enter_game_img = pygame.image.load('graphics/enter_game.png').convert_alpha()
+enter_game_img = pygame.image.load(resource_path('graphics/enter_game.png')).convert_alpha()
 enter_game_img = pygame.transform.scale(enter_game_img, (360, 108))
 enter_game_rect = enter_game_img.get_rect(midleft =(466, 662))
 WHITE = (255, 255, 255)
@@ -196,8 +222,8 @@ for x in range (block_w):
             px_img.set_at((x, y), (s, s, s))
 play_button_img = pygame.transform.scale(px_img, rect_play.size)
 
-play_again_img = pygame.image.load('graphics/play_again.png').convert_alpha()
-main_menu_img = pygame.image.load('graphics/main_menu.png').convert_alpha()
+play_again_img = pygame.image.load(resource_path('graphics/play_again.png')).convert_alpha()
+main_menu_img = pygame.image.load(resource_path('graphics/main_menu.png')).convert_alpha()
 
 play_again_img = pygame.transform.scale(play_again_img, (230, 86))
 rect_play_again_img = play_again_img.get_rect(center=rect_play1.center)
@@ -213,7 +239,7 @@ while True:
     for events in pygame.event.get():
         if events.type == pygame.QUIT:
             pygame.quit()
-            exit()
+            sys.exit()
         if game_play:
             if events.type == pygame.KEYDOWN:
                 if events.key == pygame.K_SPACE:
