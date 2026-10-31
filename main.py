@@ -64,6 +64,13 @@ num_pipes = 3
 scored = [False]*num_pipes
 score = 0
 
+final_score = 0
+high_score = 0
+try:
+    with open('highcore.txt') as hs_file:
+        high_score = int(hs_file.read())
+except (FileNotFoundError, ValueError):
+    pass
 for n in range(num_pipes):
     starting_point = 1280 + n*SPACE
     gap_size = random.randint(173, 216)
@@ -73,6 +80,16 @@ for n in range(num_pipes):
 
     pipe_d_rect.append(pipe_d_img.get_rect(midbottom = (starting_point, gap_center - half_gap)))
     pipe_u_rect.append(pipe_u_img.get_rect(midtop = (starting_point, gap_center + half_gap)))
+
+def save_scores():
+    global final_score, high_score
+    if not game_play:
+        return
+    final_score = score
+    if score> high_score:
+        high_score = score
+        with open('highscore.txt', 'w') as hs_file:
+            hs_file.write(str(high_score))
 
 base_scroll = 8
 
@@ -87,7 +104,7 @@ difficulties = [
 ]
 
 difficulty_index = 1
-scroll = int(base_scroll * difficulties[1][1])
+scroll = round(base_scroll * difficulties[1][1])
 
 diff_label = 'Select Difficulty'
 
@@ -274,6 +291,7 @@ while True:
         char_img_rect.y += speed
 
         if char_img_rect.y > 706 or char_img_rect.y < -72:
+            save_scores()
             char_img_rect.y = 216
             speed = 0
             score = 0
@@ -312,6 +330,7 @@ while True:
 
             if char_mask.overlap(pipe_u_mask, img_u_correct) or char_mask.overlap(pipe_d_mask, img_d_correct):
                 char_img_rect.center = (384, 288)
+                save_scores()
                 speed = 0
                 score = 0
 
@@ -395,6 +414,9 @@ while True:
         screen.blit(main_menu_img, rect_main_menu_img)
         pygame.draw.rect(screen, WHITE, rect_play1, 1)
         pygame.draw.rect(screen, WHITE, rect_play2, 1)
+
+        draw_text('Score: ' + str(final_score), font_, (640, 70))
+        draw_text('High Score: ' + str(high_score), font_, (640, 150), GOLD)
 
     pygame.display.update()
     clock.tick(60)
