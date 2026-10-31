@@ -113,7 +113,7 @@ def save_scores():
     if score> high_score:
         high_score = score
         try:
-            with open(score_path(s), 'w') as hs_file:
+            with open(score_path(), 'w') as hs_file:
                 hs_file.write(str(high_score))
         except OSError: pass
 
