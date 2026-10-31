@@ -35,6 +35,11 @@ hint_font = pygame.font.Font(None, 36)
 btn_font = pygame.font.Font(None, 40)
 small_font = pygame.font.Font(None, 28)
 
+title_bold = pygame.font.Font(None, 72)
+title_bold.set_bold(True)
+btn_bold = pygame.font.Font(None, 40)
+btn_bold.set_bold(True)
+
 WHITE = (255, 255, 255)
 GOLD = (255, 215, 0)
 
@@ -369,7 +374,7 @@ while True:
             screen.blit(enter_game_img, (enter_game_rect))
 
             draw_button(rect_diff)
-            draw_text(diff_label, btn_font, rect_diff.center)
+            draw_text(diff_label, btn_bold, rect_diff.center)
 
             preview_rect = char_img.get_rect(center = (640, 190))
             screen.blit(char_img, preview_rect)
@@ -382,7 +387,7 @@ while True:
 
 
         elif diff_select:
-            draw_text('Select Difficulty', font_, (640, 70))
+            draw_text('Select Difficulty', title_bold, (640, 70))
 
             for i in range(len(difficulties)):
                 name, mult = difficulties[i]
