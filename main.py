@@ -126,7 +126,7 @@ difficulties = [
     ('Good', 1.15),
     ('Hard', 1.25),
     ('Insane', 1.35),
-    ('Impossible', 1.5)
+    ('Impossible', 1.6)
 ]
 
 difficulty_index = 1
