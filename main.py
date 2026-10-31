@@ -393,11 +393,11 @@ while True:
             preview_rect = char_img.get_rect(center = (640, 190))
             screen.blit(char_img, preview_rect)
 
-            hint = hint_font.render('Click A or D to change character', True, 'white')
+            hint = hint_font.render('Press A or D to change character', True, 'white')
             screen.blit(hint, hint.get_rect(center = (640, 50)))
 
         elif char_select:
-            draw_text('Select Charater', font_, (640, 70))
+            draw_text('Select Character', font_, (640, 70))
 
             big_img = pygame.transform.scale(char_img, (288, 288))
             screen.blit(big_img, big_img.get_rect(center = (640, 320)))
