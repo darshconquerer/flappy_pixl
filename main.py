@@ -159,14 +159,12 @@ def reset_game():
 
 landing_screen = True
 game_play = False
-char_select = False
 diff_select = False
 game_over = False
 
 def show_screen(name):
-    global landing_screen, char_select, diff_select, game_play, game_over
+    global landing_screen, diff_select, game_play, game_over
     landing_screen = (name == 'landing')
-    char_select = (name == 'char_select')
     diff_select = (name == 'diff_select')
     game_play = (name == 'play')
     game_over = (name == 'game_over')
@@ -269,20 +267,6 @@ while True:
                     select_char(selected + 1)
                 if events.key == pygame.K_LEFT or events.key == pygame.K_a:
                     select_char(selected - 1)
-
-        elif char_select:
-            if events.type == pygame.MOUSEBUTTONDOWN:
-                if rect_left.collidepoint(events.pos):
-                    select_char(selected -1)
-                if rect_right.collidepoint(events.pos):
-                    select_char(selected +1)
-                if rect_back.collidepoint(events.pos):
-                    show_screen('landing')
-            if events.type == pygame.KEYDOWN:
-                if events.key in (pygame.K_RIGHT, pygame.K_d):
-                    select_char(selected + 1)
-                if events.key in (pygame.K_LEFT, pygame.K_a):
-                    select_char(selected - 1)
         
         elif diff_select:
             if events.type == pygame.MOUSEBUTTONDOWN:
@@ -370,7 +354,7 @@ while True:
         score_flap = font_.render(str(score), True, 'white')
         screen.blit(score_flap, (608, 58))
 
-    elif landing_screen or char_select or diff_select:
+    elif landing_screen or diff_select:
         landing_img_x -= base_scroll // 3
         if landing_img_x <= -landing_img_width:
             landing_img_x = 0
@@ -396,21 +380,6 @@ while True:
             hint = hint_font.render('Press A or D to change character', True, 'white')
             screen.blit(hint, hint.get_rect(center = (640, 50)))
 
-        elif char_select:
-            draw_text('Select Character', font_, (640, 70))
-
-            big_img = pygame.transform.scale(char_img, (288, 288))
-            screen.blit(big_img, big_img.get_rect(center = (640, 320)))
-
-            draw_button(rect_left)
-            draw_button(rect_right)
-            draw_text('<', font_, rect_left.center)
-            draw_text('>', font_, rect_right.center)
-
-            draw_text(str(selected + 1) + ' / ' + str(len(char_imgs)), hint_font, (640, 500))
-
-            draw_button(rect_back)
-            draw_text('Back', btn_font, rect_back.center)
 
         elif diff_select:
             draw_text('Select Difficulty', font_, (640, 70))
