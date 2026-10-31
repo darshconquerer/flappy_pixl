@@ -35,7 +35,7 @@ jobs:
       run: pip install pygame pyinstaller
       
     - name: Build with PyInstaller
-      run: pyinstaller --onefile --windowed --add-data "assets${{ matrix.separator }}assets" main.py
+      run: pyinstaller --onefile --windowed --add-data "images${{ matrix.separator }}images" main.py
       
     - name: Upload finished applications
       uses: actions/upload-artifact@v4
