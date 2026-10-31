@@ -1,0 +1,43 @@
+name: Build Game for All Platforms
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+            separator: ":"
+          - os: macos-latest
+            name: mac
+            separator: ":"
+          - os: windows-latest
+            name: windows
+            separator: ";"
+    
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Get the code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: pip install pygame pyinstaller
+      
+    - name: Build with PyInstaller
+      run: pyinstaller --onefile --windowed --add-data "assets${{ matrix.separator }}assets" main.py
+      
+    - name: Upload finished applications
+      uses: actions/upload-artifact@v4
+      with:
+        name: game-build-${{ matrix.name }}
+        path: dist/
